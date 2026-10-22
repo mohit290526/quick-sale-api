@@ -43,7 +43,11 @@
   .stat .v{font-size:26px;font-weight:800;margin-top:10px}
   .stat .v.o{color:var(--orange)} .stat .v.g{color:var(--green)}
   .stat .s{font-size:12px;color:var(--muted);margin-top:6px}
-  .ic{width:26px;height:26px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;background:#f3f3f7}
+  .ic{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:#f3f3f7;color:var(--muted)}
+  .ic svg{width:16px;height:16px}
+  .cat .box svg{width:21px;height:21px}
+  .seg svg,.btn svg,.logout svg,.sec-title svg{width:15px;height:15px;vertical-align:-2px;margin-right:4px}
+  svg{stroke-width:1.8}
   /* layout */
   .cols{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
   .sec-title{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px;margin:4px 0 2px}
@@ -120,7 +124,7 @@
 <div id="dashView" class="hide">
   <div class="top"><div class="wrap">
     <div class="logo"><b>RUVER</b> <span>• Quick Sale</span></div>
-    <button class="logout" onclick="logout()">⎋ Log out</button>
+    <button class="logout" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Log out</button>
   </div></div>
 
   <div class="wrap">
@@ -132,35 +136,31 @@
         <button class="seg" id="segToday" onclick="quick('today')">Today</button>
         <button class="seg" id="segYest" onclick="quick('yest')">Yesterday</button>
         <button class="seg" id="segCustom" onclick="document.getElementById('date').showPicker && document.getElementById('date').showPicker()">Custom Date</button>
-        <button class="btn" onclick="load()">⟳ Load Sales</button>
+        <button class="btn" onclick="load()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Load Sales</button>
       </div>
     </div>
 
     <!-- stats -->
     <div class="stats">
-      <div class="stat"><div class="k">Total Sales <span class="ic">₹</span></div><div class="v o money" id="stTotal">₹0.00</div><div class="s" id="stTotalSub">—</div></div>
-      <div class="stat"><div class="k">Cash Collection <span class="ic">▣</span></div><div class="v g money" id="stCash">₹0.00</div><div class="s" id="stCashSub">0% of total</div></div>
-      <div class="stat"><div class="k">Card Collection <span class="ic">▭</span></div><div class="v money" id="stCard">₹0.00</div><div class="s" id="stCardSub">0 transactions</div></div>
-      <div class="stat"><div class="k">UPI Collection <span class="ic">⧉</span></div><div class="v money" id="stUpi">₹0.00</div><div class="s" id="stUpiSub">0 payments</div></div>
-      <div class="stat"><div class="k">Total Orders <span class="ic">▤</span></div><div class="v" id="stOrders">0 Bills</div><div class="s" id="stAvg">Avg ticket: ₹0.00</div></div>
+      <div class="stat"><div class="k">Total Sales <span class="ic" style="background:#fff3ec;color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M16.5 13h.01"/></svg></span></div><div class="v o money" id="stTotal">₹0.00</div><div class="s" id="stTotalSub">—</div></div>
+      <div class="stat"><div class="k">Cash Collection <span class="ic" style="background:#e7f8ee;color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg></span></div><div class="v g money" id="stCash">₹0.00</div><div class="s" id="stCashSub">0% of total</div></div>
+      <div class="stat"><div class="k">Card Collection <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span></div><div class="v money" id="stCard">₹0.00</div><div class="s" id="stCardSub">0 transactions</div></div>
+      <div class="stat"><div class="k">UPI Collection <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 21v-3M17 21h4"/></svg></span></div><div class="v money" id="stUpi">₹0.00</div><div class="s" id="stUpiSub">0 payments</div></div>
+      <div class="stat"><div class="k">Total Orders <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></span></div><div class="v" id="stOrders">0 Bills</div><div class="s" id="stAvg">Avg ticket: ₹0.00</div></div>
     </div>
 
     <div class="cols">
       <!-- left: categories -->
       <div>
-        <div class="sec-title">🏷️ Category-Wise Breakdown &amp; Drill-down <span style="margin-left:auto;font-size:12px;color:var(--muted)" id="catCount"></span></div>
+        <div class="sec-title"><span style="color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/><circle cx="7" cy="7" r="1.2" fill="currentColor"/></svg></span>Category-Wise Breakdown &amp; Drill-down <span style="margin-left:auto;font-size:12px;color:var(--muted)" id="catCount"></span></div>
         <p class="sec-sub">Click a category to see its orders, then click an order to view item lines.</p>
         <div id="catList"></div>
       </div>
 
       <!-- right: summary -->
       <div class="panel sum">
-        <div class="sec-title" style="font-size:14px">🏷️ Category Sales Summary</div>
+        <div class="sec-title" style="font-size:14px"><span style="color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/><circle cx="7" cy="7" r="1.2" fill="currentColor"/></svg></span>Category Sales Summary</div>
         <div id="catSummary"></div>
-        <hr/>
-        <div class="row"><span class="tl">Gross Sales</span><span class="tv money" id="sumGross">₹0.00</span></div>
-        <div class="row"><span class="tl">Applicable Discounts</span><span class="tv money">- ₹0.00</span></div>
-        <div class="row"><span class="tl">Taxes Collected</span><span class="tv money">₹0.00</span></div>
         <hr/>
         <div class="row"><span class="net">Net Settled Amount</span><span class="net money" id="sumNet">₹0.00</span></div>
       </div>
@@ -179,7 +179,13 @@
   var LOGIN_USER = 'admin';
   var LOGIN_PASS = 'ruver123';
   var CATEGORIES = ['Earrings', 'Bracelets', 'Rings', 'Necklace'];
-  var ICONS = { Earrings:'◈', Bracelets:'⬚', Rings:'◯', Necklace:'♢' };
+  var SVG = {
+    Earrings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3a3 3 0 0 0-3 3v1"/><circle cx="5" cy="12" r="3"/><path d="M16 3a3 3 0 0 1 3 3v1"/><circle cx="19" cy="12" r="3"/></svg>',
+    Bracelets: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="9" ry="6"/><ellipse cx="12" cy="12" rx="4.5" ry="2.5"/></svg>',
+    Rings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="15" r="6"/><path d="M9 6l3-3 3 3-3 3z"/></svg>',
+    Necklace: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4a7 7 0 0 0 14 0"/><circle cx="12" cy="17" r="3"/></svg>',
+  };
+  function catIcon(c){ return SVG[c] || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="7"/></svg>'; }
   // ==================
 
   var inr = function(n){ return '₹' + Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); };
@@ -280,7 +286,7 @@
         }).join('') || '<div class="empty" style="padding:16px">No orders</div>';
 
         return '<div class="cat'+(on?' open':'')+'">'
-          + '<div class="h" onclick="tog(event,this.parentNode)"><div class="box">'+(ICONS[c]||'◻')+'</div>'
+          + '<div class="h" onclick="tog(event,this.parentNode)"><div class="box">'+catIcon(c)+'</div>'
           + '<div><div class="name">'+esc(c)+'<span class="badge '+(on?'on':'off')+'">'+(on?'Active':'No Sales')+'</span></div>'
           + '<div class="meta">Sold: '+cat.pieces+' Pcs • Orders: '+cat.orders.length+' • '+(total?Math.round(cat.revenue/total*100):0)+'% of revenue</div></div>'
           + '<div class="right"><div class="amt money">'+inr(cat.revenue)+'</div><div class="cap">Total Collection</div></div>'
@@ -299,7 +305,6 @@
         + '</div>';
     }).join('');
 
-    document.getElementById('sumGross').textContent=inr(total);
     document.getElementById('sumNet').textContent=inr(total);
     document.getElementById('footMeta').textContent='Last synced: just now • Bills: '+count;
   }
