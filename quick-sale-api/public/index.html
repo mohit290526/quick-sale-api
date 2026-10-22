@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ruver — Quick Sale Dashboard</title>
+<style>
+  :root{
+    --orange:#F26F21; --navy:#141425; --bg:#f4f5f7; --card:#ffffff;
+    --line:#e9e9ef; --muted:#70707e; --text:#1b1b25; --green:#16a34a; --blue:#2563eb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  .wrap{max-width:1180px;margin:0 auto;padding:18px}
+  .hide{display:none}
+  .money{font-variant-numeric:tabular-nums}
+  /* top bar */
+  .top{background:var(--navy);color:#fff;padding:14px 0}
+  .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .logo{font-weight:800;font-size:20px}
+  .logo b{color:var(--orange)}
+  .logo span{color:#c9c9d4;font-weight:600;font-size:16px;margin-left:8px}
+  .logout{display:flex;gap:6px;align-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;padding:9px 14px;border-radius:10px;font-size:13px;cursor:pointer}
+  /* login */
+  .login{max-width:360px;margin:12vh auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}
+  .login h2{margin:0 0 4px}.login p{margin:0 0 18px;color:var(--muted);font-size:14px}
+  label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px;text-transform:uppercase;letter-spacing:.4px}
+  input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px}
+  .btn{padding:12px 18px;border:none;border-radius:10px;background:var(--orange);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+  .btn.block{width:100%;margin-top:18px}
+  .err{color:#dc2626;font-size:13px;margin-top:10px;min-height:16px}
+  /* date card */
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+  .daterow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .daterow .cap{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;width:100%}
+  input[type=date]{width:auto;padding:10px 12px}
+  .seg{background:#f0f0f4;border:1px solid var(--line);color:var(--text);padding:9px 14px;border-radius:9px;font-size:13px;cursor:pointer}
+  .seg.active{background:#fff;border-color:var(--orange);color:var(--orange);font-weight:700}
+  /* stat cards */
+  .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;display:flex;justify-content:space-between;align-items:center}
+  .stat .v{font-size:26px;font-weight:800;margin-top:10px}
+  .stat .v.o{color:var(--orange)} .stat .v.g{color:var(--green)}
+  .stat .s{font-size:12px;color:var(--muted);margin-top:6px}
+  .ic{width:26px;height:26px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;background:#f3f3f7}
+  /* layout */
+  .cols{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
+  .sec-title{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px;margin:4px 0 2px}
+  .sec-sub{color:var(--muted);font-size:13px;margin:0 0 12px}
+  /* category accordion */
+  .cat{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+  .cat>.h{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}
+  .cat .box{width:40px;height:40px;border-radius:10px;background:#fff3ec;color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:18px}
+  .cat .name{font-weight:800;font-size:16px}
+  .cat .meta{font-size:12px;color:var(--muted);margin-top:2px}
+  .cat .right{margin-left:auto;text-align:right}
+  .cat .amt{font-weight:800}
+  .cat .cap{font-size:11px;color:var(--muted)}
+  .badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:8px;text-transform:uppercase}
+  .badge.on{background:#e7f8ee;color:var(--green)} .badge.off{background:#f0f0f4;color:var(--muted)}
+  .chev{color:var(--muted);transition:transform .15s}
+  .cat.open .chev{transform:rotate(180deg)}
+  .cat .body{border-top:1px solid var(--line);padding:12px 16px;background:#fbfbfd;display:none}
+  .cat.open .body{display:block}
+  .assoc{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;justify-content:space-between}
+  /* order rows */
+  .order{border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:10px;overflow:hidden}
+  .order>.oh{display:flex;align-items:center;gap:10px;padding:12px;cursor:pointer}
+  .order .hash{width:30px;height:30px;border-radius:8px;background:#f3f3f7;color:var(--muted);display:flex;align-items:center;justify-content:center;font-weight:700}
+  .order .ono{font-weight:700;font-size:13px}
+  .order .omt{font-size:11px;color:var(--muted);margin-top:2px}
+  .mode{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;color:#fff;margin-left:6px}
+  .mode.CASH{background:var(--green)} .mode.CARD{background:var(--orange)} .mode.UPI{background:var(--blue)}
+  .order .otot{margin-left:auto;text-align:right;font-weight:800;font-size:14px}
+  .order .obody{display:none;border-top:1px solid var(--line)}
+  .order.open .obody{display:block}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:9px 12px;font-size:12.5px;text-align:left}
+  th{color:var(--muted);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;background:#fafafb}
+  td.r,th.r{text-align:right}
+  .sku{color:var(--muted);font-size:11px}
+  .ofoot{display:flex;justify-content:space-between;padding:10px 12px;border-top:1px solid var(--line);font-size:12px}
+  .ofoot b{font-size:13px}
+  /* right summary */
+  .sum .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .sum .catline{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+  .sum .catline.dim{opacity:.6}
+  .sum .nm{font-weight:700;font-size:14px}
+  .sum .pcs{font-size:11px;color:var(--muted)}
+  .sum .pct{font-size:11px;color:var(--orange);font-weight:700}
+  .bar{height:6px;border-radius:4px;background:#eee;margin-top:8px;overflow:hidden}
+  .bar>i{display:block;height:100%;background:var(--orange)}
+  .sum hr{border:none;border-top:1px solid var(--line);margin:12px 0}
+  .sum .tl{font-size:13px;color:var(--muted)} .sum .tv{font-weight:700}
+  .sum .net{font-weight:800;font-size:16px;color:var(--orange)}
+  .empty{text-align:center;color:var(--muted);padding:40px 0}
+  footer{color:var(--muted);font-size:12px;padding:16px 0;border-top:1px solid var(--line);margin-top:10px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+  footer b{color:var(--orange)}
+  @media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}}
+  @media(max-width:560px){.stats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginView">
+  <div class="login">
+    <div class="logo" style="margin-bottom:14px"><b>RUVER</b></div>
+    <h2>Quick Sale Dashboard</h2>
+    <p>Sign in to view the daily sales register.</p>
+    <label>Username</label><input id="u" autocomplete="username" />
+    <label>Password</label><input id="p" type="password" autocomplete="current-password" />
+    <button class="btn block" onclick="doLogin()">Sign in</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashView" class="hide">
+  <div class="top"><div class="wrap">
+    <div class="logo"><b>RUVER</b> <span>• Quick Sale</span></div>
+    <button class="logout" onclick="logout()">⎋ Log out</button>
+  </div></div>
+
+  <div class="wrap">
+    <!-- date -->
+    <div class="panel">
+      <div class="daterow">
+        <span class="cap">Select report date</span>
+        <input type="date" id="date" />
+        <button class="seg" id="segToday" onclick="quick('today')">Today</button>
+        <button class="seg" id="segYest" onclick="quick('yest')">Yesterday</button>
+        <button class="seg" id="segCustom" onclick="document.getElementById('date').showPicker && document.getElementById('date').showPicker()">Custom Date</button>
+        <button class="btn" onclick="load()">⟳ Load Sales</button>
+      </div>
+    </div>
+
+    <!-- stats -->
+    <div class="stats">
+      <div class="stat"><div class="k">Total Sales <span class="ic">₹</span></div><div class="v o money" id="stTotal">₹0.00</div><div class="s" id="stTotalSub">—</div></div>
+      <div class="stat"><div class="k">Cash Collection <span class="ic">▣</span></div><div class="v g money" id="stCash">₹0.00</div><div class="s" id="stCashSub">0% of total</div></div>
+      <div class="stat"><div class="k">Card Collection <span class="ic">▭</span></div><div class="v money" id="stCard">₹0.00</div><div class="s" id="stCardSub">0 transactions</div></div>
+      <div class="stat"><div class="k">UPI Collection <span class="ic">⧉</span></div><div class="v money" id="stUpi">₹0.00</div><div class="s" id="stUpiSub">0 payments</div></div>
+      <div class="stat"><div class="k">Total Orders <span class="ic">▤</span></div><div class="v" id="stOrders">0 Bills</div><div class="s" id="stAvg">Avg ticket: ₹0.00</div></div>
+    </div>
+
+    <div class="cols">
+      <!-- left: categories -->
+      <div>
+        <div class="sec-title">🏷️ Category-Wise Breakdown &amp; Drill-down <span style="margin-left:auto;font-size:12px;color:var(--muted)" id="catCount"></span></div>
+        <p class="sec-sub">Click a category to see its orders, then click an order to view item lines.</p>
+        <div id="catList"></div>
+      </div>
+
+      <!-- right: summary -->
+      <div class="panel sum">
+        <div class="sec-title" style="font-size:14px">🏷️ Category Sales Summary</div>
+        <div id="catSummary"></div>
+        <hr/>
+        <div class="row"><span class="tl">Gross Sales</span><span class="tv money" id="sumGross">₹0.00</span></div>
+        <div class="row"><span class="tl">Applicable Discounts</span><span class="tv money">- ₹0.00</span></div>
+        <div class="row"><span class="tl">Taxes Collected</span><span class="tv money">₹0.00</span></div>
+        <hr/>
+        <div class="row"><span class="net">Net Settled Amount</span><span class="net money" id="sumNet">₹0.00</span></div>
+      </div>
+    </div>
+
+    <footer>
+      <div><b>RUVER POS</b> • Daily Sales Register</div>
+      <div id="footMeta">Last synced: —</div>
+    </footer>
+  </div>
+</div>
+
+<script>
+  // ===== CONFIG =====
+  var API_BASE = '/api/quick-sale';          // same Vercel project → relative
+  var LOGIN_USER = 'admin';
+  var LOGIN_PASS = 'ruver123';
+  var CATEGORIES = ['Earrings', 'Bracelets', 'Rings', 'Necklace'];
+  var ICONS = { Earrings:'◈', Bracelets:'⬚', Rings:'◯', Necklace:'♢' };
+  // ==================
+
+  var inr = function(n){ return '₹' + Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); };
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function show(v){ document.getElementById('loginView').classList.toggle('hide', v!=='login'); document.getElementById('dashView').classList.toggle('hide', v!=='dash'); }
+  function isoDate(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function timeOf(ts){ try{ return new Date(ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } }
+
+  function doLogin(){
+    if(document.getElementById('u').value.trim()===LOGIN_USER && document.getElementById('p').value===LOGIN_PASS){
+      try{ sessionStorage.setItem('qs_auth','1'); }catch(e){}
+      startDash();
+    } else { document.getElementById('loginErr').textContent='Wrong username or password.'; }
+  }
+  function logout(){ try{ sessionStorage.removeItem('qs_auth'); }catch(e){} show('login'); }
+
+  function quick(which){
+    var d=new Date(); if(which==='yest') d.setDate(d.getDate()-1);
+    document.getElementById('date').value=isoDate(d);
+    setSeg(which); load();
+  }
+  function setSeg(which){
+    document.getElementById('segToday').classList.toggle('active', which==='today');
+    document.getElementById('segYest').classList.toggle('active', which==='yest');
+    document.getElementById('segCustom').classList.toggle('active', which==='custom');
+  }
+
+  function startDash(){ show('dash'); document.getElementById('date').value=isoDate(new Date()); setSeg('today'); load(); }
+
+  function load(){
+    var date=document.getElementById('date').value; if(!date) return;
+    var el=document.getElementById('catList'); el.innerHTML='<div class="empty">Loading…</div>';
+    fetch(API_BASE+'?date='+encodeURIComponent(date))
+      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(render)
+      .catch(function(e){ el.innerHTML='<div class="empty">Could not load data.<br><small>'+esc(e.message)+'</small></div>'; resetStats(); });
+  }
+
+  function resetStats(){
+    ['stTotal','stCash','stCard','stUpi'].forEach(function(id){ document.getElementById(id).textContent='₹0.00'; });
+    document.getElementById('stOrders').textContent='0 Bills';
+    document.getElementById('stAvg').textContent='Avg ticket: ₹0.00';
+    document.getElementById('sumGross').textContent='₹0.00'; document.getElementById('sumNet').textContent='₹0.00';
+    document.getElementById('catSummary').innerHTML=''; document.getElementById('catCount').textContent='';
+  }
+
+  function render(data){
+    var bills=(data && data.bills)||[];
+    var total=Number(data.day_total||0);
+    var count=data.count!=null?data.count:bills.length;
+
+    // payment splits
+    var byMode={CASH:0,CARD:0,UPI:0}, cnt={CASH:0,CARD:0,UPI:0};
+    bills.forEach(function(b){ var m=(b.payment_mode||'').toUpperCase(); if(byMode[m]==null){byMode[m]=0;cnt[m]=0;} byMode[m]+=Number(b.grand_total||0); cnt[m]++; });
+
+    document.getElementById('stTotal').textContent=inr(total);
+    document.getElementById('stTotalSub').textContent='Settled for '+(data.date||'');
+    document.getElementById('stCash').textContent=inr(byMode.CASH);
+    document.getElementById('stCashSub').textContent=(total?Math.round(byMode.CASH/total*100):0)+'% of total';
+    document.getElementById('stCard').textContent=inr(byMode.CARD);
+    document.getElementById('stCardSub').textContent=cnt.CARD+' transactions';
+    document.getElementById('stUpi').textContent=inr(byMode.UPI);
+    document.getElementById('stUpiSub').textContent=cnt.UPI+' payments';
+    document.getElementById('stOrders').textContent=count+' Bill'+(count===1?'':'s');
+    document.getElementById('stAvg').textContent='Avg ticket: '+inr(count?total/count:0);
+
+    // category aggregation
+    var cats={}; CATEGORIES.forEach(function(c){ cats[c]={pieces:0,revenue:0,orders:[]}; });
+    bills.forEach(function(b){
+      var perCat={};
+      (b.items||[]).forEach(function(it){
+        var c=it.category; if(!cats[c]) cats[c]={pieces:0,revenue:0,orders:[]};
+        cats[c].pieces+=Number(it.pieces||0); cats[c].revenue+=Number(it.line_total||0);
+        if(!perCat[c]) perCat[c]={pcs:0,total:0,items:[]};
+        perCat[c].pcs+=Number(it.pieces||0); perCat[c].total+=Number(it.line_total||0); perCat[c].items.push(it);
+      });
+      Object.keys(perCat).forEach(function(c){ cats[c].orders.push({bill:b, pcs:perCat[c].pcs, total:perCat[c].total, items:perCat[c].items}); });
+    });
+
+    var catNames=Object.keys(cats);
+    document.getElementById('catCount').textContent=catNames.filter(function(c){return cats[c].revenue>0;}).length+' active';
+
+    // left list
+    var list=document.getElementById('catList');
+    if(!bills.length){ list.innerHTML='<div class="empty">No sales for this date.</div>'; }
+    else {
+      list.innerHTML=catNames.map(function(c){
+        var cat=cats[c], on=cat.revenue>0;
+        var orders=cat.orders.map(function(o){
+          var rows=o.items.map(function(i){
+            return '<tr><td>'+esc(i.category)+'</td><td class="r">'+Number(i.pieces||0)+'</td><td class="r">'+inr(i.price)+'</td><td class="r">—</td><td class="r">'+inr(i.line_total)+'</td></tr>';
+          }).join('');
+          return '<div class="order" onclick="tog(event,this)">'
+            + '<div class="oh"><span class="hash">#</span><div><div class="ono">'+esc(o.bill.bill_no)+'<span class="mode '+esc((o.bill.payment_mode||'').toUpperCase())+'">'+esc(o.bill.payment_mode||'')+'</span></div><div class="omt">'+timeOf(o.bill.created_at)+' • '+o.pcs+' Pcs</div></div><div class="otot">'+inr(o.total)+'<div class="cap" style="font-weight:400">Order Total</div></div></div>'
+            + '<div class="obody"><table><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Unit Price</th><th class="r">Tax/GST</th><th class="r">Total</th></tr></thead><tbody>'+rows+'</tbody></table>'
+            + '<div class="ofoot"><span>Mode: <b>'+esc(o.bill.payment_mode||'')+'</b></span><span>Order Total: <b>'+inr(o.total)+'</b></span></div></div>'
+            + '</div>';
+        }).join('') || '<div class="empty" style="padding:16px">No orders</div>';
+
+        return '<div class="cat'+(on?' open':'')+'">'
+          + '<div class="h" onclick="tog(event,this.parentNode)"><div class="box">'+(ICONS[c]||'◻')+'</div>'
+          + '<div><div class="name">'+esc(c)+'<span class="badge '+(on?'on':'off')+'">'+(on?'Active':'No Sales')+'</span></div>'
+          + '<div class="meta">Sold: '+cat.pieces+' Pcs • Orders: '+cat.orders.length+' • '+(total?Math.round(cat.revenue/total*100):0)+'% of revenue</div></div>'
+          + '<div class="right"><div class="amt money">'+inr(cat.revenue)+'</div><div class="cap">Total Collection</div></div>'
+          + '<span class="chev">⌄</span></div>'
+          + '<div class="body"><div class="assoc"><span>Associated Orders ('+cat.orders.length+')</span><span>Click an order to view item lines</span></div>'+orders+'</div></div>';
+      }).join('');
+    }
+
+    // right summary
+    document.getElementById('catSummary').innerHTML=catNames.map(function(c){
+      var cat=cats[c], pct=total?Math.round(cat.revenue/total*100):0, on=cat.revenue>0;
+      return '<div class="catline'+(on?'':' dim')+'">'
+        + '<div class="row"><span class="nm">'+esc(c)+'</span><span class="money" style="font-weight:700">'+inr(cat.revenue)+'</span></div>'
+        + '<div class="row"><span class="pcs">'+cat.pieces+' Pcs sold</span><span class="pct">'+pct+'%</span></div>'
+        + (on?'<div class="bar"><i style="width:'+pct+'%"></i></div>':'')
+        + '</div>';
+    }).join('');
+
+    document.getElementById('sumGross').textContent=inr(total);
+    document.getElementById('sumNet').textContent=inr(total);
+    document.getElementById('footMeta').textContent='Last synced: just now • Bills: '+count;
+  }
+
+  // toggle accordions (stop bubbling so nested toggles don't fight)
+  function tog(e, node){ e.stopPropagation(); node.classList.toggle('open'); }
+
+  (function(){
+    var authed=false; try{ authed=sessionStorage.getItem('qs_auth')==='1'; }catch(e){}
+    if(authed) startDash(); else show('login');
+  })();
+</script>
+</body>
+</html>
